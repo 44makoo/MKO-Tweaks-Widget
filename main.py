@@ -144,7 +144,7 @@ async def crea_widget_personalizzato(
         return
 
     # Valori di default stile Yusa Tweaks
-    titolo_def = "📦 Yusa Tweaks — Packages"
+    titolo_def = "📦 MKO Tweaks — Packs"
     desc_def = "Everything you need to get your PC running at full potential."
     colore_embed = discord.Color.from_str("#E91E63") # Rosa/Fucsia dell'immagine
     
