@@ -9,7 +9,7 @@ from datetime import datetime
 # CONFIGURAZIONE ID
 # ========================================================
 ID_RUOLO_VERIFICATO = 1519307669364674662
-ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup, /widget e /tos
+ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup, /widget, /tos e /site
 
 # URL del Banner per la verifica e il listino shop
 URL_BANNER_VERIFICA = "https://cdn.discordapp.com/attachments/1516457598369533952/1518983715479490580/ce2828a1-7b03-46bb-b7d3-710697e0ae07.png?ex=6a3c9013&is=6a3b3e93&hm=e0d3d0c7f75e4cc65bab163778db658e5f8d6c72dbc2cdbec73f4dc4ab0cce40&"
@@ -89,7 +89,7 @@ bot = MioBotNuovo()
 # --------------------------------------------------------
 # COMANDO 1: /setup (Portale Verifica)
 # --------------------------------------------------------
-@bot.tree.command(name="setup", description="Invia il portale di verifica strutturato con banner.")
+@bot.tree.command(name="setup", description="Invia il portale di verifica estruturato con banner.")
 async def setup_verifica(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
     ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
@@ -137,7 +137,6 @@ async def crea_widget_personalizzato(
         await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
         return
 
-    # Colore scuro integrato a tema Discord (o personalizzato se inserito)
     colore_embed = discord.Color.from_str("#2b2d31")
     if colore_hex:
         try:
@@ -235,7 +234,7 @@ async def invia_tos(interaction: discord.Interaction):
     )
 
     embed_tos.add_field(
-        name="💼 4. Diritti d'Autore e Condivisione",
+        name="🔒 4. Diritti d'Autore e Condivisione",
         value="I file inviati, i software proprietari utilizzati e le configurazioni custom fornite durante i tweak sono ad uso strettamente personale. È vietato ridistribuire, vendere o condividere i file con terzi.",
         inline=False
     )
@@ -248,6 +247,56 @@ async def invia_tos(interaction: discord.Interaction):
 
     await interaction.channel.send(embed=embed_tos)
     await interaction.followup.send("✅ Messaggio ToS inviato con successo!", ephemeral=True)
+
+# --------------------------------------------------------
+# COMANDO 4: /site (Widget Sito Web & Status Online)
+# --------------------------------------------------------
+@bot.tree.command(name="site", description="Invia il widget ufficiale del sito web con lo stato online.")
+@app_commands.describe(
+    banner_url="Link alternativo per l'immagine di fondo del widget"
+)
+async def invia_widget_sito(
+    interaction: discord.Interaction, 
+    banner_url: str = None
+):
+    await interaction.response.defer(ephemeral=True)
+    ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
+    
+    if ruolo_staff not in interaction.user.roles:
+        await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
+        return
+
+    embed_site = discord.Embed(
+        title="🌐 MAKO TWEAKS — OFFICIAL WEBSITE",
+        description=(
+            "Accedi alla nostra piattaforma ufficiale per scoprire tutti i dettagli tecnici, "
+            "leggere gli articoli del blog e configurare il tuo piano di ottimizzazione definitivo.\n\n"
+            "🔗 **Link Diretto:** https://mkotweaks.xyz/\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ),
+        color=discord.Color.from_str("#2b2d31")
+    )
+
+    embed_site.add_field(
+        name="<a:online:1320183464896495676> STATUS PIATTAFORMA",
+        value="• **Sito Web:** `ONLINE`\n• **Sistema di Booking:** `ATTIVO`\n• **E-Commerce:** `FUNZIONANTE`",
+        inline=False
+    )
+
+    embed_site.add_field(
+        name="💡 Perché usare il sito?",
+        value="⚡ Interfaccia rapida e intuitiva\n💳 Pagamenti sicuri e crittografati\n📁 Storico dei tuoi ordini sempre a portata di mano",
+        inline=False
+    )
+
+    embed_site.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
+    
+    icona_server = interaction.guild.icon.url if interaction.guild.icon else None
+    embed_site.set_footer(text="Mako Tweaks • Web Services", icon_url=icona_server)
+    embed_site.timestamp = datetime.now()
+
+    await interaction.channel.send(embed=embed_site)
+    await interaction.followup.send("✅ Widget del sito inviato correttamente!", ephemeral=True)
 
 # ========================================================
 # AVVIO
