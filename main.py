@@ -9,7 +9,7 @@ from datetime import datetime
 # CONFIGURAZIONE ID
 # ========================================================
 ID_RUOLO_VERIFICATO = 1519307669364674662
-ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup e /widget
+ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup, /widget e /tos
 
 # URL del Banner per la verifica e il listino shop
 URL_BANNER_VERIFICA = "https://cdn.discordapp.com/attachments/1516457598369533952/1518983715479490580/ce2828a1-7b03-46bb-b7d3-710697e0ae07.png?ex=6a3c9013&is=6a3b3e93&hm=e0d3d0c7f75e4cc65bab163778db658e5f8d6c72dbc2cdbec73f4dc4ab0cce40&"
@@ -155,7 +155,6 @@ async def crea_widget_personalizzato(
         color=colore_embed
     )
 
-    # Iniezione dei tuoi Tier reali all'interno della griglia organizzata
     embed.add_field(
         name="🟢 TIER 01: BASIC TWEAK — 5€", 
         value="• Pulizia file temporanei\n• Ottimizzazione Windows base\n• Debloat leggero del sistema", 
@@ -186,7 +185,6 @@ async def crea_widget_personalizzato(
         inline=False
     )
 
-    # Imposta il banner (usa quello di default se non viene inserito come parametro nel comando)
     embed.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
     
     icona_server = interaction.guild.icon.url if interaction.guild.icon else None
@@ -195,6 +193,61 @@ async def crea_widget_personalizzato(
 
     await interaction.channel.send(embed=embed)
     await interaction.followup.send("✅ Widget listino inviato correttamente!", ephemeral=True)
+
+# --------------------------------------------------------
+# COMANDO 3: /tos (Termini di Servizio / Regolamento Shop)
+# --------------------------------------------------------
+@bot.tree.command(name="tos", description="Invia l'embed ufficiale dei Termini di Servizio (ToS).")
+async def invia_tos(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
+    
+    if ruolo_staff not in interaction.user.roles:
+        await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
+        return
+
+    embed_tos = discord.Embed(
+        title="📋 MKO TWEAKS — TERMS OF SERVICE (ToS)",
+        description=(
+            "Acquistando o utilizzando i nostri servizi di ottimizzazione, accetti automaticamente i seguenti termini.\n"
+            "🌐 Pagina ufficiale completa: https://mkotweaks.xyz/tos\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ),
+        color=discord.Color.from_str("#2b2d31")
+    )
+
+    embed_tos.add_field(
+        name="⚠️ 1. Responsabilità Hardware & Software",
+        value="Ogni ottimizzazione viene eseguita in totale sicurezza. Tuttavia, MKO Tweaks non si assume alcuna responsabilità per danni hardware preesistenti, instabilità causate da componenti difettosi o modifiche personali successive effettuate dall'utente.",
+        inline=False
+    )
+
+    embed_tos.add_field(
+        name="🚫 2. Politica sui Rimborsi (Refund Policy)",
+        value="Trattandosi di servizi digitali erogati e prestazioni di manodopera immediate, **non sono previsti rimborsi** una volta che l'ottimizzazione è stata completata o avviata sul computer del cliente.",
+        inline=False
+    )
+
+    embed_tos.add_field(
+        name="🔒 3. Politica Anti-Chargeback",
+        value="Qualsiasi tentativo fraudolento di chargeback o storno bancario comporterà il ban immediato dal server e dai servizi. Tutte le sessioni, le prove di acquisto e i log storici verranno inoltrati direttamente agli istituti bancari per revocare la richiesta.",
+        inline=False
+    )
+
+    embed_tos.add_field(
+        name="💼 4. Diritti d'Autore e Condivisione",
+        value="I file inviati, i software proprietari utilizzati e le configurazioni custom fornite durante i tweak sono ad uso strettamente personale. È vietato ridistribuire, vendere o condividere i file con terzi.",
+        inline=False
+    )
+
+    embed_tos.set_image(url=URL_BANNER_VERIFICA)
+    
+    icona_server = interaction.guild.icon.url if interaction.guild.icon else None
+    embed_tos.set_footer(text="Mako Tweaks • Regolamento Ufficiale", icon_url=icona_server)
+    embed_tos.timestamp = datetime.now()
+
+    await interaction.channel.send(embed=embed_tos)
+    await interaction.followup.send("✅ Messaggio ToS inviato con successo!", ephemeral=True)
 
 # ========================================================
 # AVVIO
