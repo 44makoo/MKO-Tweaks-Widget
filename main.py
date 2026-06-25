@@ -318,6 +318,7 @@ async def invia_widget_invito(
 
     await interaction.channel.send(embed=embed_invite)
     await interaction.followup.send("✅ Widget invito inviato!", ephemeral=True)
+
 # --------------------------------------------------------
 # COMANDO 6: /result (Widget Risultati Multimmagine)
 # --------------------------------------------------------
@@ -353,7 +354,6 @@ async def invia_widget_risultati(
 
     lista_embed = []
 
-    # Primo Embed Principale (con titolo, descrizione e footer)
     embed1 = discord.Embed(
         title="📈 MKO TWEAKS — BENCHMARK & RESULTS",
         description=descrizione,
@@ -366,21 +366,66 @@ async def invia_widget_risultati(
     embed1.timestamp = datetime.now()
     lista_embed.append(embed1)
 
-    # Secondo Embed (solo immagine per integrarsi graficamente nel messaggio)
     if immagine_url_2:
         embed2 = discord.Embed(color=colore_embed)
         embed2.set_image(url=immagine_url_2)
         lista_embed.append(embed2)
 
-    # Terzo Embed (solo immagine)
     if immagine_url_3:
         embed3 = discord.Embed(color=colore_embed)
         embed3.set_image(url=immagine_url_3)
         lista_embed.append(embed3)
 
-    # Invia la lista completa di embed (fino a 3 immagini visualizzate insieme)
     await interaction.channel.send(embeds=lista_embed)
     await interaction.followup.send("✅ Widget risultati multi-immagine inviato!", ephemeral=True)
+
+# --------------------------------------------------------
+# COMANDO 7: /pay (Widget Metodi di Pagamento Ufficiali)
+# --------------------------------------------------------
+@bot.tree.command(name="pay", description="Invia il widget con i metodi di pagamento ufficiali del server.")
+@app_commands.describe(
+    banner_url="Link alternativo per l'immagine di fondo del widget"
+)
+async def invia_widget_pagamenti(
+    interaction: discord.Interaction,
+    banner_url: str = None
+):
+    await interaction.response.defer(ephemeral=True)
+    ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
+    
+    if ruolo_staff not in interaction.user.roles:
+        await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
+        return
+
+    embed_pay = discord.Embed(
+        title="💳 MKO TWEAKS — PAYMENT METHODS",
+        description=(
+            "Di seguito trovi i nostri metodi di pagamento ufficiali accettati per completare gli ordini.\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ),
+        color=discord.Color.from_str("#2b2d31")
+    )
+
+    embed_pay.add_field(
+        name="<:128457paypal:1519788092754755746> PAYPAL",
+        value="🔗 **Link Diretto:** https://www.paypal.me/romaaez\n*Invia la quota concordata selezionando 'Amici e Familiari'.*",
+        inline=False
+    )
+
+    embed_pay.add_field(
+        name="<:1801revolut:1519788073100251148> REVOLUT",
+        value="📌 **Istruzioni e Dati:** Trovi le coordinate aggiornate all'interno di <#1519321325670236350>.",
+        inline=False
+    )
+
+    embed_pay.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
+    
+    icona_server = interaction.guild.icon.url if interaction.guild.icon else None
+    embed_pay.set_footer(text="Mako Tweaks • Secure Payment Gateway", icon_url=icona_server)
+    embed_pay.timestamp = datetime.now()
+
+    await interaction.channel.send(embed=embed_pay)
+    await interaction.followup.send("✅ Widget pagamenti inviato correttamente!", ephemeral=True)
 
 # ========================================================
 # AVVIO
