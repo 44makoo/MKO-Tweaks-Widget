@@ -9,7 +9,7 @@ from datetime import datetime
 # CONFIGURAZIONE ID
 # ========================================================
 ID_RUOLO_VERIFICATO = 1519307669364674662
-ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup, /widget, /tos e /site
+ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup, /widget, /tos, /site e /invite
 
 # URL del Banner per la verifica e il listino shop
 URL_BANNER_VERIFICA = "https://cdn.discordapp.com/attachments/1516457598369533952/1518983715479490580/ce2828a1-7b03-46bb-b7d3-710697e0ae07.png?ex=6a3c9013&is=6a3b3e93&hm=e0d3d0c7f75e4cc65bab163778db658e5f8d6c72dbc2cdbec73f4dc4ab0cce40&"
@@ -180,7 +180,7 @@ async def crea_widget_personalizzato(
 
     embed.add_field(
         name="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        value="🛒 **Come Acquistare:** Apri un ticket nel canale predisposto o acquista direttamente dal sito web.",
+        value="🛒 **Come Acquistare:** Opri un ticket nel canale predisposto o acquista direttamente dal sito web.",
         inline=False
     )
 
@@ -266,17 +266,18 @@ async def invia_widget_sito(
         await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
         return
 
-    # Incolla qui dentro la stringa esatta che hai copiato da Discord tra le virgolette
-    emoji_fissa = "<a:971828statusonline:1519697127222284488>"
-
     embed_site = discord.Embed(
         title="🌐 https://mkotweaks.xyz/",
         color=discord.Color.from_str("#2b2d31")
     )
 
+    # Cerca l'emoji nel server usando il nome esatto impostato prima
+    emoji_custom = discord.utils.get(interaction.guild.emojis, name="971828statusonline")
+    status_emoji = str(emoji_custom) if emoji_custom else "🟢"
+
     embed_site.add_field(
         name="STATUS",
-        value=f"{emoji_fissa} `ONLINE`",
+        value=f"{status_emoji} `ONLINE`",
         inline=False
     )
 
@@ -284,6 +285,41 @@ async def invia_widget_sito(
     
     await interaction.channel.send(embed=embed_site)
     await interaction.followup.send("✅ Widget caricato!", ephemeral=True)
+
+# --------------------------------------------------------
+# COMANDO 5: /invite (Widget Invito Discord Personalizzato)
+# --------------------------------------------------------
+@bot.tree.command(name="invite", description="Invia il widget con il link di invito ufficiale e menzione.")
+@app_commands.describe(
+    banner_url="Link alternativo per l'immagine di fondo dell'invito"
+)
+async def invia_widget_invito(
+    interaction: discord.Interaction, 
+    banner_url: str = None
+):
+    await interaction.response.defer(ephemeral=True)
+    ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
+    
+    if ruolo_staff not in interaction.user.roles:
+        await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
+        return
+
+    embed_invite = discord.Embed(
+        title="🚀 DISCORD OFFICIAL INVITE",
+        color=discord.Color.from_str("#2b2d31")
+    )
+
+    embed_invite.add_field(
+        name="LINK",
+        value="🔗 discord.gg/mkotweaks",
+        inline=False
+    )
+
+    embed_invite.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
+
+    # Invia il messaggio taggando everyone prima dell'embed per attivare la notifica visiva
+    await interaction.channel.send(content="@everyone", embed=embed_invite)
+    await interaction.followup.send("✅ Widget invito inviato!", ephemeral=True)
 
 # ========================================================
 # AVVIO
