@@ -318,20 +318,23 @@ async def invia_widget_invito(
 
     await interaction.channel.send(embed=embed_invite)
     await interaction.followup.send("✅ Widget invito inviato!", ephemeral=True)
-
 # --------------------------------------------------------
-# COMANDO 6: /result (Widget Risultati & Benchmark)
+# COMANDO 6: /result (Widget Risultati Multimmagine)
 # --------------------------------------------------------
-@bot.tree.command(name="result", description="Invia un widget per mostrare i risultati e i benchmark delle ottimizzazioni.")
+@bot.tree.command(name="result", description="Invia un widget per mostrare i risultati e i benchmark (supporta più immagini).")
 @app_commands.describe(
     descrizione="Testo personalizzato da mostrare all'interno del widget dei risultati",
-    immagine_url="Link per inserire un'immagine o lo screenshot del benchmark",
-    colore_hex="Colore personalizzato per la barra laterale (Es: #2b2d31 o verde, rosso, ecc.)"
+    immagine_url_1="Link della prima immagine o screenshot (Obbligatorio)",
+    immagine_url_2="Link della seconda immagine o screenshot (Opzionale)",
+    immagine_url_3="Link della terza immagine o screenshot (Opzionale)",
+    colore_hex="Colore personalizzato per la barra laterale (Es: #2b2d31)"
 )
 async def invia_widget_risultati(
     interaction: discord.Interaction,
     descrizione: str,
-    immagine_url: str = None,
+    immagine_url_1: str,
+    immagine_url_2: str = None,
+    immagine_url_3: str = None,
     colore_hex: str = None
 ):
     await interaction.response.defer(ephemeral=True)
@@ -341,7 +344,6 @@ async def invia_widget_risultati(
         await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
         return
 
-    # Assegna il colore personalizzato o usa quello standard scuro
     colore_embed = discord.Color.from_str("#2b2d31")
     if colore_hex:
         try:
@@ -349,21 +351,36 @@ async def invia_widget_risultati(
         except ValueError:
             pass
 
-    embed_result = discord.Embed(
+    lista_embed = []
+
+    # Primo Embed Principale (con titolo, descrizione e footer)
+    embed1 = discord.Embed(
         title="📈 MKO TWEAKS — BENCHMARK & RESULTS",
         description=descrizione,
         color=colore_embed
     )
-
-    # Imposta lo screenshot dei risultati o il banner generico
-    embed_result.set_image(url=immagine_url if immagine_url else URL_BANNER_VERIFICA)
+    embed1.set_image(url=immagine_url_1)
     
     icona_server = interaction.guild.icon.url if interaction.guild.icon else None
-    embed_result.set_footer(text="Mako Tweaks • Performance Checked", icon_url=icona_server)
-    embed_result.timestamp = datetime.now()
+    embed1.set_footer(text="Mako Tweaks • Performance Checked", icon_url=icona_server)
+    embed1.timestamp = datetime.now()
+    lista_embed.append(embed1)
 
-    await interaction.channel.send(embed=embed_result)
-    await interaction.followup.send("✅ Widget risultati inviato con successo!", ephemeral=True)
+    # Secondo Embed (solo immagine per integrarsi graficamente nel messaggio)
+    if immagine_url_2:
+        embed2 = discord.Embed(color=colore_embed)
+        embed2.set_image(url=immagine_url_2)
+        lista_embed.append(embed2)
+
+    # Terzo Embed (solo immagine)
+    if immagine_url_3:
+        embed3 = discord.Embed(color=colore_embed)
+        embed3.set_image(url=immagine_url_3)
+        lista_embed.append(embed3)
+
+    # Invia la lista completa di embed (fino a 3 immagini visualizzate insieme)
+    await interaction.channel.send(embeds=lista_embed)
+    await interaction.followup.send("✅ Widget risultati multi-immagine inviato!", ephemeral=True)
 
 # ========================================================
 # AVVIO
