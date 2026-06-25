@@ -249,9 +249,9 @@ async def invia_tos(interaction: discord.Interaction):
     await interaction.followup.send("✅ Messaggio ToS inviato con successo!", ephemeral=True)
 
 # --------------------------------------------------------
-# COMANDO 4: /site (Widget Sito Web & Status Online)
+# COMANDO 4: /site (Widget Sito Web Ultra-Minimal)
 # --------------------------------------------------------
-@bot.tree.command(name="site", description="Invia il widget ufficiale del sito web con lo stato online.")
+@bot.tree.command(name="site", description="Invia il link del sito, lo status e l'immagine.")
 @app_commands.describe(
     banner_url="Link alternativo per l'immagine di fondo del widget"
 )
@@ -266,37 +266,24 @@ async def invia_widget_sito(
         await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
         return
 
+    # Embed ultra-pulito: Solo Link nel titolo e colore scuro coerente
     embed_site = discord.Embed(
-        title="🌐 MAKO TWEAKS — OFFICIAL WEBSITE",
-        description=(
-            "Accedi alla nostra piattaforma ufficiale per scoprire tutti i dettagli tecnici, "
-            "leggere gli articoli del blog e configurare il tuo piano di ottimizzazione definitivo.\n\n"
-            "🔗 **Link Diretto:** https://mkotweaks.xyz/\n"
-            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        ),
+        title="🌐 https://mkotweaks.xyz/",
         color=discord.Color.from_str("#2b2d31")
     )
 
+    # Unico campo richiesto con l'emoji animata funzionante
     embed_site.add_field(
-        name="<a:online:1320183464896495676> STATUS PIATTAFORMA",
-        value="• **Sito Web:** `ONLINE`\n• **Sistema di Booking:** `ATTIVO`\n• **E-Commerce:** `FUNZIONANTE`",
+        name="STATUS",
+        value="<a:online:1320183464896495676> `ONLINE`",
         inline=False
     )
 
-    embed_site.add_field(
-        name="💡 Perché usare il sito?",
-        value="⚡ Interfaccia rapida e intuitiva\n💳 Pagamenti sicuri e crittografati\n📁 Storico dei tuoi ordini sempre a portata di mano",
-        inline=False
-    )
-
+    # Solo l'immagine impostata in basso
     embed_site.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
     
-    icona_server = interaction.guild.icon.url if interaction.guild.icon else None
-    embed_site.set_footer(text="Mako Tweaks • Web Services", icon_url=icona_server)
-    embed_site.timestamp = datetime.now()
-
     await interaction.channel.send(embed=embed_site)
-    await interaction.followup.send("✅ Widget del sito inviato correttamente!", ephemeral=True)
+    await interaction.followup.send("✅ Widget caricato!", ephemeral=True)
 
 # ========================================================
 # AVVIO
