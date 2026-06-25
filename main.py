@@ -9,9 +9,9 @@ from datetime import datetime
 # CONFIGURAZIONE ID
 # ========================================================
 ID_RUOLO_VERIFICATO = 1519307669364674662
-ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup, /widget, /tos, /site e /invite
+ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo abilitato ai comandi gestionali
 
-# URL del Banner per la verifica e il listino shop
+# URL del Banner predefinito
 URL_BANNER_VERIFICA = "https://cdn.discordapp.com/attachments/1516457598369533952/1518983715479490580/ce2828a1-7b03-46bb-b7d3-710697e0ae07.png?ex=6a3c9013&is=6a3b3e93&hm=e0d3d0c7f75e4cc65bab163778db658e5f8d6c72dbc2cdbec73f4dc4ab0cce40&"
 
 # ========================================================
@@ -271,7 +271,6 @@ async def invia_widget_sito(
         color=discord.Color.from_str("#2b2d31")
     )
 
-    # Cerca l'emoji nel server usando il nome esatto impostato prima
     emoji_custom = discord.utils.get(interaction.guild.emojis, name="971828statusonline")
     status_emoji = str(emoji_custom) if emoji_custom else "🟢"
 
@@ -317,9 +316,54 @@ async def invia_widget_invito(
 
     embed_invite.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
 
-    # Invia il messaggio taggando everyone prima dell'embed per attivare la notifica visiva
-    await interaction.channel.send(content="", embed=embed_invite)
+    await interaction.channel.send(embed=embed_invite)
     await interaction.followup.send("✅ Widget invito inviato!", ephemeral=True)
+
+# --------------------------------------------------------
+# COMANDO 6: /result (Widget Risultati & Benchmark)
+# --------------------------------------------------------
+@bot.tree.command(name="result", description="Invia un widget per mostrare i risultati e i benchmark delle ottimizzazioni.")
+@app_commands.describe(
+    descrizione="Testo personalizzato da mostrare all'interno del widget dei risultati",
+    immagine_url="Link per inserire un'immagine o lo screenshot del benchmark",
+    colore_hex="Colore personalizzato per la barra laterale (Es: #2b2d31 o verde, rosso, ecc.)"
+)
+async def invia_widget_risultati(
+    interaction: discord.Interaction,
+    descrizione: str,
+    immagine_url: str = None,
+    colore_hex: str = None
+):
+    await interaction.response.defer(ephemeral=True)
+    ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
+    
+    if ruolo_staff not in interaction.user.roles:
+        await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
+        return
+
+    # Assegna il colore personalizzato o usa quello standard scuro
+    colore_embed = discord.Color.from_str("#2b2d31")
+    if colore_hex:
+        try:
+            colore_embed = discord.Color.from_str(colore_hex if colore_hex.startswith("#") else f"#{colore_hex}")
+        except ValueError:
+            pass
+
+    embed_result = discord.Embed(
+        title="📈 MKO TWEAKS — BENCHMARK & RESULTS",
+        description=descrizione,
+        color=colore_embed
+    )
+
+    # Imposta lo screenshot dei risultati o il banner generico
+    embed_result.set_image(url=immagine_url if immagine_url else URL_BANNER_VERIFICA)
+    
+    icona_server = interaction.guild.icon.url if interaction.guild.icon else None
+    embed_result.set_footer(text="Mako Tweaks • Performance Checked", icon_url=icona_server)
+    embed_result.timestamp = datetime.now()
+
+    await interaction.channel.send(embed=embed_result)
+    await interaction.followup.send("✅ Widget risultati inviato con successo!", ephemeral=True)
 
 # ========================================================
 # AVVIO
