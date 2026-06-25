@@ -318,7 +318,7 @@ async def invia_widget_invito(
     embed_invite.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
 
     # Invia il messaggio taggando everyone prima dell'embed per attivare la notifica visiva
-    await interaction.channel.send(content="@everyone", embed=embed_invite)
+    await interaction.channel.send(content="", embed=embed_invite)
     await interaction.followup.send("✅ Widget invito inviato!", ephemeral=True)
 
 # ========================================================
