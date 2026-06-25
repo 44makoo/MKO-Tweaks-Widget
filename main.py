@@ -275,7 +275,7 @@ async def invia_widget_sito(
     # Unico campo richiesto con l'emoji animata funzionante
     embed_site.add_field(
         name="STATUS",
-        value=":971828statusonline: `ONLINE`",
+        value="<a:971828statusonline:1519697127222284488> `ONLINE`",
         inline=False
     )
 
