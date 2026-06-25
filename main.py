@@ -266,20 +266,20 @@ async def invia_widget_sito(
         await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
         return
 
-    # Embed ultra-pulito: Solo Link nel titolo e colore scuro coerente
+    # Incolla qui dentro la stringa esatta che hai copiato da Discord tra le virgolette
+    emoji_fissa = "<a:971828statusonline:1519697127222284488>"
+
     embed_site = discord.Embed(
         title="🌐 https://mkotweaks.xyz/",
         color=discord.Color.from_str("#2b2d31")
     )
 
-    # Unico campo richiesto con l'emoji animata funzionante
     embed_site.add_field(
         name="STATUS",
-        value="<a:971828statusonline:1519697127222284488> `ONLINE`",
+        value=f"{emoji_fissa} `ONLINE`",
         inline=False
     )
 
-    # Solo l'immagine impostata in basso
     embed_site.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
     
     await interaction.channel.send(embed=embed_site)
