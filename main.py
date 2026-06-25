@@ -147,7 +147,11 @@ async def crea_widget_personalizzato(
 
     embed = discord.Embed(
         title="🏆 MAKO TWEAKS — OFFICIAL STORE",
-        description="Scegli il livello di ottimizzazione perfetto per le tue esigenze hardware e di gaming.\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        description=(
+            "Scegli il livello di ottimizzazione perfetto per le tue esigenze hardware e di gaming.\n"
+            "🌐 Visita il nostro sito ufficiale: https://mkotweaks.xyz/\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ),
         color=colore_embed
     )
 
@@ -178,7 +182,7 @@ async def crea_widget_personalizzato(
 
     embed.add_field(
         name="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        value="🛒 **Come Acquistare:** Apri un ticket nel canale predisposto o contatta direttamente lo Staff.",
+        value="🛒 **Come Acquistare:** Apri un ticket nel canale predisposto o acquista direttamente dal sito web.",
         inline=False
     )
 
