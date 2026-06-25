@@ -89,7 +89,7 @@ bot = MioBotNuovo()
 # --------------------------------------------------------
 # COMANDO 1: /setup (Portale Verifica)
 # --------------------------------------------------------
-@bot.tree.command(name="setup", description="Invia il portale di verifica estruturato con banner.")
+@bot.tree.command(name="setup", description="Invia il portale di verifica strutturato con banner.")
 async def setup_verifica(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
     ruolo_staff = interaction.guild.get_role(ID_RUOLO_STAFF_SETUP)
@@ -234,7 +234,7 @@ async def invia_tos(interaction: discord.Interaction):
     )
 
     embed_tos.add_field(
-        name="🔒 4. Diritti d'Autore e Condivisione",
+        name="💼 4. Diritti d'Autore e Condivisione",
         value="I file inviati, i software proprietari utilizzati e le configurazioni custom fornite durante i tweak sono ad uso strettamente personale. È vietato ridistribuire, vendere o condividere i file con terzi.",
         inline=False
     )
