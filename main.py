@@ -6,16 +6,16 @@ from discord.ui import Button, View
 from datetime import datetime
 
 # ========================================================
-# CONFIUGRAZIONE ID (Sostituisci con i tuoi ID di Discord)
+# CONFIGURAZIONE ID
 # ========================================================
 ID_RUOLO_VERIFICATO = 1519307669364674662
 ID_RUOLO_STAFF_SETUP = 1519316973614268566  # Ruolo che può usare /setup e /widget
 
-# URL del tuo Banner per la verifica
+# URL del Banner per la verifica e il listino shop
 URL_BANNER_VERIFICA = "https://cdn.discordapp.com/attachments/1516457598369533952/1518983715479490580/ce2828a1-7b03-46bb-b7d3-710697e0ae07.png?ex=6a3c9013&is=6a3b3e93&hm=e0d3d0c7f75e4cc65bab163778db658e5f8d6c72dbc2cdbec73f4dc4ab0cce40&"
 
 # ========================================================
-# AGGIUNTI RIGUARDANTI IL SISTEMA DI VERIFICA
+# COMPONENTI INTERFACCIA (VERIFICA)
 # ========================================================
 class VistaConferma(View):
     def __init__(self):
@@ -68,7 +68,7 @@ class VistaVerificaPrincipale(View):
         await interaction.response.send_message(embed=embed_regole, view=VistaConferma(), ephemeral=True)
 
 # ========================================================
-# STRUTTURA DEL BOT NOVO
+# STRUTTURA DEL BOT
 # ========================================================
 class MioBotNuovo(commands.Bot):
     def __init__(self):
@@ -78,18 +78,16 @@ class MioBotNuovo(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-        # Registra la vista persistente del pulsante di verifica
         self.add_view(VistaVerificaPrincipale())
-        # Sincronizza i comandi slash (/) globalmente
         await self.tree.sync()
 
     async def on_ready(self):
-        print(f"🚀 [{datetime.now().strftime('%H:%M:%S')}] Bot Online come: {self.user}")
+        print(f"🚀 Bot Online come: {self.user}")
 
 bot = MioBotNuovo()
 
 # --------------------------------------------------------
-# COMANDO 1: /setup (Per il widget di verifica)
+# COMANDO 1: /setup (Portale Verifica)
 # --------------------------------------------------------
 @bot.tree.command(name="setup", description="Invia il portale di verifica strutturato con banner.")
 async def setup_verifica(interaction: discord.Interaction):
@@ -120,19 +118,15 @@ async def setup_verifica(interaction: discord.Interaction):
     await interaction.followup.send("✅ Widget di verifica inviato!", ephemeral=True)
 
 # --------------------------------------------------------
-# COMANDO 2: /widget (Per il listino stile Yusa Tweaks)
+# COMANDO 2: /widget (Listino Prezzi e Tier MKO Tweaks)
 # --------------------------------------------------------
-@bot.tree.command(name="widget", description="Crea il widget listino/servizi avanzato.")
+@bot.tree.command(name="widget", description="Crea il widget listino prezzi ufficiale dei pacchetti.")
 @app_commands.describe(
-    titolo="Titolo personalizzato dell'embed",
-    sottotitolo="Descrizione sotto il titolo",
-    colore_hex="Colore barra laterale (Es: #FF1493)",
-    banner_url="Link di un'immagine/banner per il fondo"
+    colore_hex="Colore barra laterale opzionale (Es: #2b2d31)",
+    banner_url="Link alternativo per l'immagine di fondo dello shop"
 )
 async def crea_widget_personalizzato(
     interaction: discord.Interaction, 
-    titolo: str = None, 
-    sottotitolo: str = None, 
     colore_hex: str = None, 
     banner_url: str = None
 ):
@@ -143,11 +137,8 @@ async def crea_widget_personalizzato(
         await interaction.followup.send("❌ Permessi insufficienti.", ephemeral=True)
         return
 
-    # Valori di default stile Yusa Tweaks
-    titolo_def = "📦 MKO Tweaks — Packs"
-    desc_def = "Everything you need to get your PC running at full potential."
-    colore_embed = discord.Color.from_str("#E91E63") # Rosa/Fucsia dell'immagine
-    
+    # Colore scuro integrato a tema Discord (o personalizzato se inserito)
+    colore_embed = discord.Color.from_str("#2b2d31")
     if colore_hex:
         try:
             colore_embed = discord.Color.from_str(colore_hex if colore_hex.startswith("#") else f"#{colore_hex}")
@@ -155,38 +146,54 @@ async def crea_widget_personalizzato(
             pass
 
     embed = discord.Embed(
-        title=titolo if titolo else titolo_def,
-        description=sottotitolo if sottotitolo else desc_def,
+        title="🏆 MAKO TWEAKS — OFFICIAL STORE",
+        description="Scegli il livello di ottimizzazione perfetto per le tue esigenze hardware e di gaming.\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         color=colore_embed
     )
 
-    # Griglia Pacchetti (3 per riga)
-    embed.add_field(name="BIOS Only — $15", value="BIOS configuration\n& tuning", inline=True)
-    embed.add_field(name="Windows Tweak — $35", value="Full Windows\noptimization tweak", inline=True)
-    embed.add_field(name="Advanced — $50", value="• Full BIOS tuning\n• Full Windows cleanup and optimization", inline=True)
+    # Iniezione dei tuoi Tier reali all'interno della griglia organizzata
+    embed.add_field(
+        name="🟢 TIER 01: BASIC TWEAK — 5€", 
+        value="• Pulizia file temporanei\n• Ottimizzazione Windows base\n• Debloat leggero del sistema", 
+        inline=False
+    )
     
-    # Seconda riga pacchetti
-    embed.add_field(name="Ultimate — $100", value="• Everything in Advanced\n• Deeper overclocking (CPU, GPU, RAM)\n• Advanced BIOS optimization", inline=True)
-    embed.add_field(name="Gatekept — ~~~$250~~~ $200 (20% OFF)", value="• Everything in Ultimate\n• Max overclocks across the board\n• Prioritized service queue", inline=True)
-    embed.add_field(name="\u200b", value="\u200b", inline=True) # Bilanciatore griglia
+    embed.add_field(
+        name="🔵 TIER 02: ADVANCED TWEAKS — 10€", 
+        value="• Tutti i tweak del piano **Basic**\n• Riduzione dell'Input Lag\n• Power Plan personalizzato\n• Ottimizzazione RAM", 
+        inline=False
+    )
+    
+    embed.add_field(
+        name="👑 TIER 03: ULTRA TWEAKS — 25€", 
+        value="• Tutti i tweak del piano **Advanced**\n• Deep Debloat completo\n• Ottimizzazione GPU & CPU\n• Configurazione Bios base\n• Network Lag Reduction", 
+        inline=False
+    )
+    
+    embed.add_field(
+        name="🔥 TIER 04: ELITE TWEAKS — 45€", 
+        value="• Full System Tuning hardware\n• Massimo FPS Boost & Stabilità\n• Ottimizzazione periferiche\n• Overclock sicuro + Stress Test\n• Assistenza VIP prioritaria", 
+        inline=False
+    )
 
-    # Sezioni full-width
-    embed.add_field(name="🎬 Additional Services", value="**OBS Setup** — $35 · Hidden settings & stream config\n**Dual PC Setup** — $80 · Capture card, audio routing & optimization", inline=False)
-    embed.add_field(name="⚡ Priority Upgrade", value="Any package can be upgraded to priority for **+$25** — moves you up in the service queue.", inline=False)
-    embed.add_field(name="⚠️ Requirements", value="• **Must have a USB drive**\n• Staff will install Windows for you if needed", inline=False)
-    embed.add_field(name="🔒 Chargeback Policy", value="If any customer attempts a chargeback after receiving a tweak — we record everything. We have full proof of purchase and the entire session recorded. All information will be provided to the bank to reverse the chargeback.", inline=False)
+    embed.add_field(
+        name="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        value="🛒 **Come Acquistare:** Apri un ticket nel canale predisposto o contatta direttamente lo Staff.",
+        inline=False
+    )
 
+    # Imposta il banner (usa quello di default se non viene inserito come parametro nel comando)
+    embed.set_image(url=banner_url if banner_url else URL_BANNER_VERIFICA)
+    
+    icona_server = interaction.guild.icon.url if interaction.guild.icon else None
+    embed.set_footer(text="Mako Tweaks • Verified Optimization System", icon_url=icona_server)
     embed.timestamp = datetime.now()
 
-    if banner_url:
-        embed.set_image(url=banner_url)
-
     await interaction.channel.send(embed=embed)
-    await interaction.followup.send("✅ Widget listino inviato!", ephemeral=True)
-
+    await interaction.followup.send("✅ Widget listino inviato correttamente!", ephemeral=True)
 
 # ========================================================
-# AVVIO BOT (Railway)
+# AVVIO
 # ========================================================
 TOKEN = os.getenv("DISCORD_TOKEN")
 if TOKEN:
